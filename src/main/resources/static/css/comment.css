@@ -1,0 +1,94 @@
+.commentSection {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 500px;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.commentIcon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.comment-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.commentList {
+    margin-bottom: 1rem;
+}
+
+.comment-item {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #333;
+}
+
+.comment-content {
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.commentListButtons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.commentForm {
+    position: relative;
+}
+
+.commentForm textarea {
+    width: 100%;
+    padding-top: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 100px;
+    resize: none;
+}
+
+.commentForm button,
+.modifyDelete {
+    background-color: #EFDDDD;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 60px;
+    height: 25px;
+    padding: 0;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.commentForm button:hover,
+.modifyDelete:hover {
+    background-color: #DBBABA;
+}
+
+.commentForm button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.modifyDelete {
+    margin-left: 0.5rem;
+}
