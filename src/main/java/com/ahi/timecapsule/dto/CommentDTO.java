@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class CommentDTO {
@@ -17,7 +17,7 @@ public class CommentDTO {
   private String content;
   private String userId;
   private String authorNickname;
-  private int storyId;  // Integer에서 int로 변경
+  private int storyId;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
