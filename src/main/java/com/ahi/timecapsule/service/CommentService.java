@@ -21,9 +21,9 @@ public class CommentService {
 
   @Autowired
   public CommentService(
-          CommentRepository commentRepository,
-          StoryRepository storyRepository,
-          UserRepository userRepository) {
+      CommentRepository commentRepository,
+      StoryRepository storyRepository,
+      UserRepository userRepository) {
     this.commentRepository = commentRepository;
     this.storyRepository = storyRepository;
     this.userRepository = userRepository;
@@ -38,13 +38,13 @@ public class CommentService {
   @Transactional
   public CommentDTO createComment(CommentDTO commentDTO) {
     User user =
-            userRepository
-                    .findById(commentDTO.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
+        userRepository
+            .findById(commentDTO.getUserId())
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
     Story story =
-            storyRepository
-                    .findById(commentDTO.getStoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 스토리 ID입니다."));
+        storyRepository
+            .findById(commentDTO.getStoryId())
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 스토리 ID입니다."));
 
     Comment comment = commentDTO.toEntity(user, story);
     Comment savedComment = commentRepository.save(comment);
@@ -54,9 +54,9 @@ public class CommentService {
   @Transactional
   public CommentDTO updateComment(Long commentId, CommentDTO commentDTO, String userId) {
     Comment comment =
-            commentRepository
-                    .findById(commentId)
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
 
     if (!comment.getUser().getUserId().equals(userId)) {
       throw new IllegalArgumentException("작성자만 본인 댓글을 수정할 수 있습니다.");
@@ -70,9 +70,9 @@ public class CommentService {
   @Transactional
   public void deleteComment(Long commentId, String userId) {
     Comment comment =
-            commentRepository
-                    .findById(commentId)
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
 
     if (!comment.getUser().getUserId().equals(userId)) {
       throw new IllegalArgumentException("작성자만 본인 댓글을 삭제할 수 있습니다.");
