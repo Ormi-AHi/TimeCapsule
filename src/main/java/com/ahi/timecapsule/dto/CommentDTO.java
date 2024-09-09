@@ -25,7 +25,7 @@ public class CommentDTO {
     return CommentDTO.builder()
         .id(comment.getId())
         .content(comment.getContent())
-        .userId(comment.getUser().getId())
+        .userId(comment.getUser().getUserId())
         .authorNickname(comment.getUser().getNickname())
         .storyId(comment.getStory().getId())
         .createdAt(comment.getCreatedAt())
