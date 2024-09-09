@@ -3,13 +3,13 @@ package com.ahi.timecapsule.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Comment {
@@ -17,6 +17,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 300)
     private String content;
 
     @ManyToOne
@@ -27,17 +28,18 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
+//    생성시간과 수정시간을 현재시간으로 설정
     @PrePersist
     protected void onCreate() {
-        createdAt = new Timestamp(System.currentTimeMillis());
-        updatedAt = new Timestamp(System.currentTimeMillis());
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
-
+//수정시간을 현재시간으로 업데이트
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Timestamp(System.currentTimeMillis());
+        updatedAt = LocalDateTime.now();
     }
 }

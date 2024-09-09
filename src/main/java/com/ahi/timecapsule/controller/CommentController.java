@@ -5,62 +5,78 @@ import com.ahi.timecapsule.dto.UserDTO;
 import com.ahi.timecapsule.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-@RestController
+
+@Controller
 @RequestMapping("/comments")
 public class CommentController {
-    private final CommentService commentService;
+  private final CommentService commentService;
 
-    @Autowired
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
+  //CommentService를 주입받는 생성자
+  @Autowired
+  public CommentController(CommentService commentService) {
+    this.commentService = commentService;
+  }
 
-    @GetMapping("/story/{storyId}")
-    public ResponseEntity<List<CommentDTO>> getCommentsByStoryId(@PathVariable Long storyId) {
-        return ResponseEntity.ok(commentService.getCommentsByStoryId(storyId));
-    }
+  //특정 스토리의 댓글 목록을 조회
+  @GetMapping
+  public String getComments(@RequestParam int storyId, Model model) {
+    List<CommentDTO> comments = commentService.getCommentsByStoryId(storyId);
+    model.addAttribute("comments", comments);
+    model.addAttribute("storyId", storyId);
+    return "comment-list";
+  }
 
-    @PostMapping
-    public ResponseEntity<CommentDTO> createComment(
-            @RequestBody CommentDTO commentDto,
-            Authentication authentication) {
-        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
-        if (userDTO == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        commentDto.setUserId(userDTO.getId());
-        CommentDTO createdComment = commentService.createComment(commentDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+  //새로운 댓글을 생성하는 메서드
+  @PostMapping
+  public String createComment(@ModelAttribute CommentDTO commentDto,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof UserDTO)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
     }
+    UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+    commentDto.setUserId(userDTO.getUserId());
+    CommentDTO createdComment = commentService.createComment(commentDto);
+    redirectAttributes.addFlashAttribute("message", "댓글이 성공적으로 작성되었습니다.");
+    return "redirect:/stories/" + commentDto.getStoryId();
+  }
 
-    @PutMapping("/{commentId}")
-    public ResponseEntity<CommentDTO> updateComment(
-            @PathVariable Long commentId,
-            @RequestBody CommentDTO commentDto,
-            Authentication authentication) {
-        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
-        if (userDTO == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        CommentDTO updatedComment = commentService.updateComment(commentId, commentDto, userDTO.getId());
-        return ResponseEntity.ok(updatedComment);
+  //댓글 수정 매서드
+  @PostMapping("/{commentId}")
+  public String updateComment(@PathVariable Long commentId,
+                              @ModelAttribute CommentDTO commentDto,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof UserDTO)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
     }
+    UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+    CommentDTO updatedComment = commentService.updateComment(commentId, commentDto, userDTO.getUserId());
+    redirectAttributes.addFlashAttribute("message", "댓글이 성공적으로 수정되었습니다.");
+    return "redirect:/stories/" + updatedComment.getStoryId();
+  }
 
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
-            @PathVariable Long commentId,
-            Authentication authentication) {
-        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
-        if (userDTO == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        commentService.deleteComment(commentId, userDTO.getId());
-        return ResponseEntity.noContent().build();
+  //댓글 삭제 매서드
+  @PostMapping("/{commentId}/delete")
+  public String deleteComment(@PathVariable Long commentId,
+                              @RequestParam int storyId,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof UserDTO)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
     }
+    UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+    commentService.deleteComment(commentId, userDTO.getUserId());
+    redirectAttributes.addFlashAttribute("message", "댓글이 성공적으로 삭제되었습니다.");
+    return "redirect:/stories/" + storyId;
+  }
 }
