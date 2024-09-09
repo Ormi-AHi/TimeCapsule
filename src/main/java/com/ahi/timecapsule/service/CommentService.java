@@ -7,12 +7,11 @@ import com.ahi.timecapsule.entity.User;
 import com.ahi.timecapsule.repository.CommentRepository;
 import com.ahi.timecapsule.repository.StoryRepository;
 import com.ahi.timecapsule.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -21,7 +20,10 @@ public class CommentService {
   private final UserRepository userRepository;
 
   @Autowired
-  public CommentService(CommentRepository commentRepository, StoryRepository storyRepository, UserRepository userRepository) {
+  public CommentService(
+      CommentRepository commentRepository,
+      StoryRepository storyRepository,
+      UserRepository userRepository) {
     this.commentRepository = commentRepository;
     this.storyRepository = storyRepository;
     this.userRepository = userRepository;
@@ -30,16 +32,18 @@ public class CommentService {
   @Transactional(readOnly = true)
   public List<CommentDTO> getCommentsByStoryId(int storyId) {
     List<Comment> comments = commentRepository.findByStoryId(storyId);
-    return comments.stream()
-            .map(CommentDTO::fromComment)
-            .collect(Collectors.toList());
+    return comments.stream().map(CommentDTO::fromComment).collect(Collectors.toList());
   }
 
   @Transactional
   public CommentDTO createComment(CommentDTO commentDTO) {
-    User user = userRepository.findById(commentDTO.getUserId())
+    User user =
+        userRepository
+            .findById(commentDTO.getUserId())
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
-    Story story = storyRepository.findById(commentDTO.getStoryId())
+    Story story =
+        storyRepository
+            .findById(commentDTO.getStoryId())
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 스토리 ID입니다."));
 
     Comment comment = commentDTO.toEntity(user, story);
@@ -49,7 +53,9 @@ public class CommentService {
 
   @Transactional
   public CommentDTO updateComment(Long commentId, CommentDTO commentDTO, String userId) {
-    Comment comment = commentRepository.findById(commentId)
+    Comment comment =
+        commentRepository
+            .findById(commentId)
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
 
     if (!comment.getUser().getId().equals(userId)) {
@@ -63,7 +69,9 @@ public class CommentService {
 
   @Transactional
   public void deleteComment(Long commentId, String userId) {
-    Comment comment = commentRepository.findById(commentId)
+    Comment comment =
+        commentRepository
+            .findById(commentId)
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 댓글입니다."));
 
     if (!comment.getUser().getId().equals(userId)) {
