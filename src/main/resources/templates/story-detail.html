@@ -126,7 +126,9 @@
 
         if (currentPath.startsWith('/community/stories')) {
             window.location.href = `/community/stories?page=${pageNumber}`;
-        } else {
+        } else if (currentPath.includes('/shared')) {
+            window.location.href = `/stories/shared?page=${pageNumber}`
+        } else{
             window.location.href = `/stories?page=${pageNumber}`;
         }
     }

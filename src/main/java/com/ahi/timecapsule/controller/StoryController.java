@@ -40,26 +40,20 @@ public class StoryController {
   // 마이 스토리 목록 조회(전체/검색)
   @GetMapping("/stories")
   public String getStoryList(@RequestParam(value = "keyword", required = false, defaultValue = "") String searchKeyword,
-                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "1") int page,
                                 @RequestParam(defaultValue = "10") int size,
                                 HttpServletRequest request,
                                 Model model) {
     String userId = getCurrentUserId();
     Page<FindStoryResponseDTO> storyPage;
 
-    if (searchKeyword.isEmpty()) {
-      storyPage = storyService.findUserStories(userId, page, size);
-    } else {
-      storyPage = storyService.findMyStoriesByKeyword(userId, searchKeyword, page, size);
-    }
+    int actualPage = page - 1;
 
-//    System.out.println("현재 페이지 번호: " + storyPage.getNumber());  // 현재 페이지 (0부터 시작)
-//    System.out.println("전체 페이지 수: " + storyPage.getTotalPages());  // 전체 페이지 수
-//    System.out.println("페이지 당 항목 수: " + storyPage.getSize());  // 페이지 당 항목 수
-//    System.out.println("현재 페이지에 포함된 항목 수: " + storyPage.getNumberOfElements());  // 현재 페이지에 실제 포함된 항목 수
-//    System.out.println("전체 항목 수: " + storyPage.getTotalElements());  // 전체 항목 수
-//    System.out.println("첫 페이지 여부: " + storyPage.isFirst());  // 첫 페이지 여부
-//    System.out.println("마지막 페이지 여부: " + storyPage.isLast());
+    if (searchKeyword.isEmpty()) {
+      storyPage = storyService.findUserStories(userId, actualPage, size);
+    } else {
+      storyPage = storyService.findMyStoriesByKeyword(userId, searchKeyword, actualPage, size);
+    }
 
     model.addAttribute("storyPage", storyPage);
     model.addAttribute("tab", "myStories");
@@ -70,17 +64,19 @@ public class StoryController {
   // 공유된 스토리 목록 조회(전체/검색)
   @GetMapping("/stories/shared")
   public String getSharedStoryList(@RequestParam(value = "keyword", required = false, defaultValue = "") String searchKeyword,
-                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "1") int page,
                                   @RequestParam(defaultValue = "10") int size,
                                   HttpServletRequest request,
                                   Model model) {
     String userId = getCurrentUserId();
     Page<FindStoryResponseDTO> storyPage;
 
+    int actualPage = page - 1;
+
     if (searchKeyword.isEmpty()) {
-      storyPage = storyService.findSharedStories(userId, page, size);
+      storyPage = storyService.findSharedStories(userId, actualPage, size);
     } else {
-      storyPage = storyService.findSharedStoriesByKeyword(userId, searchKeyword, page, size);
+      storyPage = storyService.findSharedStoriesByKeyword(userId, searchKeyword, actualPage, size);
     }
 
     model.addAttribute("storyPage", storyPage);
@@ -217,16 +213,18 @@ public ResponseEntity<Map<String, Object>> deleteStory(@PathVariable("id") Long 
   // 커뮤니티 스토리 목록 조회(전체/검색)
   @GetMapping("/community/stories")
   public String getCommunityStoryList(@RequestParam(value = "keyword", required = false, defaultValue = "") String searchKeyword,
-                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "1") int page,
                                 @RequestParam(defaultValue = "10") int size,
                                 HttpServletRequest request,
                                 Model model) {
     Page<FindStoryResponseDTO> storyPage;
 
+    int actualPage = page - 1;
+
     if (searchKeyword.isEmpty()) {
-      storyPage = storyService.findCommunityStories(page, size);
+      storyPage = storyService.findCommunityStories(actualPage, size);
     } else {
-      storyPage = storyService.findCommunityStoriesByKeyword(searchKeyword, page, size);
+      storyPage = storyService.findCommunityStoriesByKeyword(searchKeyword, actualPage, size);
     }
 
     model.addAttribute("storyPage", storyPage);
