@@ -354,6 +354,6 @@ class UserServiceTest {
     assertTrue(password.length() >= 6 && password.length() <= 20);
     assertTrue(password.matches(".*[A-Z].*"));
     assertTrue(password.matches(".*[a-z].*"));
-//    assertTrue(password.matches(".*\\d.*"));
+    //    assertTrue(password.matches(".*\\d.*"));
   }
 }
