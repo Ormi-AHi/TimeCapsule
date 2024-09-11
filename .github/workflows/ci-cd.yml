@@ -30,6 +30,12 @@ jobs:
           echo "${{ secrets.APPLICATION_SECRET_YML }}" | base64 --decode > src/main/resources/application-secret.yml
           find src
 
+      - name: Check decoded YML content
+        run: cat src/main/resources/application.yml
+
+      - name: Check decoded SECRET YML content
+        run: cat src/main/resources/application-secret.yml
+
       # # 3. Gradle 캐싱 -> gradle의 의존성을 캐싱해서 매번 gradle을 새로 가져오는 것을 방지하여 빌드시간을 줄이기 위함
       # - name: Gradle Caching
       #   uses: actions/cache@v3
