@@ -9,6 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class StoryDTO {
+
+  private Long id;
+
   private UserDTO userDTO;
 
   private String title;
@@ -27,34 +30,35 @@ public class StoryDTO {
 
   private boolean isShared;
 
-//  private List<StoryShareDTO> storyShares = new ArrayList<>();
+  //  private List<StoryShareDTO> storyShares = new ArrayList<>();
 
-//  private List<ImageDTO> images = new ArrayList<>();
+  //  private List<ImageDTO> images = new ArrayList<>();
 
   public Story toEntity() {
 
     return Story.builder()
-            .user(userDTO.toEntity())
-            .title(title)
-            .content(content)
-            .dialect(dialect)
-            .speaker(speaker)
-            .soundFile(soundFile)
-            .isShared(isShared)
-            .build();
+        .user(userDTO.toEntity())
+        .title(title)
+        .content(content)
+        .dialect(dialect)
+        .speaker(speaker)
+        .soundFile(soundFile)
+        .isShared(isShared)
+        .build();
   }
 
   public static StoryDTO fromEntity(Story story) {
     return StoryDTO.builder()
-            .userDTO(UserDTO.fromEntity(story.getUser()))
-            .title(story.getTitle())
-            .content(story.getContent())
-            .dialect(story.getDialect())
-            .speaker(story.getSpeaker())
-            .createdAt(story.getCreatedAt())
-            .updatedAt(story.getUpdatedAt())
-            .soundFile(story.getSoundFile())
-            .isShared(story.isShared())
-            .build();
+        .id(story.getId())
+        .userDTO(UserDTO.fromEntity(story.getUser()))
+        .title(story.getTitle())
+        .content(story.getContent())
+        .dialect(story.getDialect())
+        .speaker(story.getSpeaker())
+        .createdAt(story.getCreatedAt())
+        .updatedAt(story.getUpdatedAt())
+        .soundFile(story.getSoundFile())
+        .isShared(story.isShared())
+        .build();
   }
 }
