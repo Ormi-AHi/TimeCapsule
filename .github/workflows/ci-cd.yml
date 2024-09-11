@@ -16,11 +16,11 @@ jobs:
       - uses: actions/checkout@v3
 
       # 1. Java 17 세팅
-      - name: Set up JDK 17
+      - name: Set up Azul Zulu JDK 17
         uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'  # Azul Zulu JDK 사용
           java-version: '17'
-          distribution: 'temurin'
 
       # 2. Yaml 파일 세팅
       - name: Set Yaml
