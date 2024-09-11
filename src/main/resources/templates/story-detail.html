@@ -29,11 +29,11 @@
                     <span th:text="${#temporals.format(story.createdAt, 'yyyy.MM.dd')}">YYYY.MM.DD</span> |
                     <span th:text="${story.isShared() ? '공개' : '비공개'}"></span>
                 </p>
-                <p th:th:if="${!(currentURI.contains('/stories/shared') || currentURI.contains('/community'))}">공유자 |
-                    <span th:each="shared, iterStat : ${story.sharedStories}">
-                        <span th:text="${shared.userDTO.nickname}"></span><span th:if="${!iterStat.last}">,</span>
-                    </span>
-                </p>
+<!--                <p th:th:if="${!(currentURI.contains('/stories/shared') || currentURI.contains('/community'))}">공유자 |-->
+<!--                    <span th:each="shared, iterStat : ${story.sharedStories}">-->
+<!--                        <span th:text="${shared.userDTO.nickname}"></span><span th:if="${!iterStat.last}">,</span>-->
+<!--                    </span>-->
+<!--                </p>-->
             </div>
 
             <div th:unless="${currentURI.contains('/stories/shared')}" class="download-buttons">
@@ -56,6 +56,13 @@
 
         <div class="story-content">
             <p th:text="${story.content}">게시물 내용 (사진 포함)</p>
+        </div>
+
+        <div class="form-group shared-group">
+            <label for="sharedList" class="shared-list"><img src="/images/Share.png" alt="공유자">공유자</label>
+            <div class="tag-input-container">
+                <input type="text" id="sharedList" class="tag-input" readonly>
+            </div>
         </div>
 
         <div th:unless="${currentURI.contains('/stories/shared')}" class="story-buttons">
@@ -82,56 +89,101 @@
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<script>
-    // 삭제 모달창
-    document.getElementById("deleteBtn").addEventListener("click", function() {
+<script th:inline="javascript">
 
-        const storyId = [[${story.id}]];
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentUser = /*[[${story.getAuthor().nickname}]]*/ ''; // 본인 ID
 
-        console.log("story id: ", storyId);
+        // 공유자 ID를 태그 형태로 추가 및 삭제
+        const tagInputContainer = document.querySelector('.tag-input-container');
+        const tagInput = document.querySelector('.tag-input');
 
-        if (confirm("정말로 삭제하시겠습니까?")) {
-            fetch('/stories/' + storyId, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
+        tagInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && tagInput.value.trim() !== '') {
+                e.preventDefault();
+                const newSharedUser = tagInput.value.trim();
+
+                // 본인 ID와 동일한 공유자 ID일 경우
+                if (newSharedUser === currentUser) {
+                    alert('본인에게는 공유할 수 없습니다.');
+                    tagInput.value = '';
+                    return;
                 }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        let modal = document.getElementById("deleteModal");
-                        modal.style.display = "flex";
-                    } else {
-                        alert("삭제에 실패했습니다. 다시 시도해주세요.");
+
+                addTag(newSharedUser);
+                // 새로운 공유자를 sharedList에 추가
+                sharedList.push(newSharedUser);
+                tagInput.value = '';
+            }
+        });
+
+        function addTag(text) {
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.innerHTML = `${text}`;
+            // tag.innerHTML = `${text} <i class="remove-tag">×</i>`;
+            tagInputContainer.insertBefore(tag, tagInput);
+        }
+
+        const sharedList = [];
+
+        // 기존 공유자 리스트를 태그 형태로 출력
+        const existingSharedList = /*[[${story.sharedStories}]]*/ [];
+        existingSharedList.forEach(function (shared) {
+            addTag(shared.userDTO.nickname);
+            sharedList.push(shared.userDTO.nickname); // sharedList 배열에 추가
+        });
+
+        // 삭제 모달창
+        document.getElementById("deleteBtn").addEventListener("click", function () {
+
+            const storyId = [[${story.id}]];
+
+            console.log("story id: ", storyId);
+
+            if (confirm("정말로 삭제하시겠습니까?")) {
+                fetch('/stories/' + storyId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
                 })
-                .catch(error => {
-                    console.error('Error: ', error);
-                    alert("삭제에 실패했습니다. 다시 시도해주세요.");
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            let modal = document.getElementById("deleteModal");
+                            modal.style.display = "flex";
+                        } else {
+                            alert("삭제에 실패했습니다. 다시 시도해주세요.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error: ', error);
+                        alert("삭제에 실패했습니다. 다시 시도해주세요.");
+                    });
+            }
+        });
+
+        document.getElementById("closeModal").addEventListener("click", function () {
+            let modal = document.getElementById("deleteModal");
+            modal.style.display = "none";
+            window.location.href = "/stories";
+        });
+
+        // 페이지 번호를 유지한 스토리 목록 페이지로 이동하는 함수
+        function goToStoryList() {
+            const pageNumber = sessionStorage.getItem('currentPage') || 1;
+            const currentPath = window.location.pathname;
+
+            if (currentPath.startsWith('/community/stories')) {
+                window.location.href = `/community/stories?page=${pageNumber}`;
+            } else if (currentPath.includes('/shared')) {
+                window.location.href = `/stories/shared?page=${pageNumber}`
+            } else {
+                window.location.href = `/stories?page=${pageNumber}`;
+            }
         }
     });
-
-    document.getElementById("closeModal").addEventListener("click", function() {
-        let modal = document.getElementById("deleteModal");
-        modal.style.display = "none";
-        window.location.href = "/stories";
-    });
-
-    // 페이지 번호를 유지한 스토리 목록 페이지로 이동하는 함수
-    function goToStoryList() {
-        const pageNumber = sessionStorage.getItem('currentPage') || 1;
-        const currentPath = window.location.pathname;
-
-        if (currentPath.startsWith('/community/stories')) {
-            window.location.href = `/community/stories?page=${pageNumber}`;
-        } else if (currentPath.includes('/shared')) {
-            window.location.href = `/stories/shared?page=${pageNumber}`
-        } else{
-            window.location.href = `/stories?page=${pageNumber}`;
-        }
-    }
 </script>
 </body>
 </html>
