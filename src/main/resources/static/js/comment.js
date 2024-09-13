@@ -90,7 +90,6 @@ function loadComments(storyId) {
             alert(error.message);
         });
 }
-
 function submitComment(form, storyId, content) {
     fetch('/comments', {
         method: 'POST',
