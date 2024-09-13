@@ -189,7 +189,6 @@ public class StoryService {
 
         // 실제로 저장할 경로 생성
         File save = new File(directory, newFileName);
-        System.out.println("저장경로: " + save.getPath());
 
         // 파일을 지정된 경로에 저장
         file.transferTo(save);
@@ -226,8 +225,6 @@ public class StoryService {
     String fileName = file.getOriginalFilename();
     String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
-    System.out.println("file = " + fileName);
-
     String path = externalPath;
 
     // 확장자에 따른 경로 설정
@@ -263,7 +260,7 @@ public class StoryService {
             .title(storyContentDTO.getTitle())
             .isShared(storyContentDTO.isShared())
             .content(storyContentDTO.getContent())
-            .userDTO(UserDTO.fromEntity(user)) // Story는 User와도 관계가 있을 수 있음
+            .userDTO(UserDTO.fromEntity(user))
             .build();
 
     Story story = storyDTO.toEntity();

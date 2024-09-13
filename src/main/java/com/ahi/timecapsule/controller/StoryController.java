@@ -8,6 +8,7 @@ import com.ahi.timecapsule.dto.request.StoryContentDTO;
 import com.ahi.timecapsule.dto.request.StoryOptionDTO;
 import com.ahi.timecapsule.exception.StoryNotFoundException;
 import com.ahi.timecapsule.exception.UserNotFoundException;
+import com.ahi.timecapsule.service.ApiService;
 import com.ahi.timecapsule.service.ImageService;
 import com.ahi.timecapsule.service.StoryService;
 import com.ahi.timecapsule.service.UserService;
@@ -40,12 +41,20 @@ public class StoryController {
 
   private final String[] dialects = {"선택 안함", "강원도", "충청도", "경상도", "전라도", "제주도"};
   private final String[] speakers = {"선택 안함", "할머니", "할아버지", "어머니", "아버지", "손자", "손녀"};
+  private final ApiService apiService;
+  private final ApiController apiController;
 
   public StoryController(
-      UserService userService, StoryService storyService, ImageService imageService) {
+      UserService userService,
+      StoryService storyService,
+      ImageService imageService,
+      ApiService apiService,
+      ApiController apiController) {
     this.userService = userService;
     this.storyService = storyService;
     this.imageService = imageService;
+    this.apiService = apiService;
+    this.apiController = apiController;
   }
 
   // 스토리 생성 폼 조회
@@ -67,14 +76,13 @@ public class StoryController {
       RedirectAttributes redirectAttributes)
       throws IOException {
 
-    System.out.println(file.getOriginalFilename());
-
     List<MultipartFile> files = new ArrayList<>();
     files.add(file);
 
     List<String> filePath = storyService.saveFiles(files, userId);
     storyOptionDTO.setSoundFile(filePath.get(0));
 
+    apiController.postStoryOptionDTO(storyOptionDTO);
     session.setAttribute("StoryOptionDTO", storyOptionDTO);
     redirectAttributes.addFlashAttribute("userId", userId);
 
@@ -105,16 +113,18 @@ public class StoryController {
       @RequestPart("images") List<MultipartFile> images,
       @ModelAttribute StoryContentDTO storyContentDTO,
       @ModelAttribute("userId") String userId,
+      @ModelAttribute("content") String content,
       HttpSession session)
       throws IOException {
 
     List<String> filesPath = new ArrayList<>();
-    if (images != null && !images.isEmpty()) {
+    if (images != null && !images.isEmpty() && !images.get(0).getOriginalFilename().isEmpty()) {
       filesPath = storyService.saveFiles(images, userId);
     }
 
     StoryOptionDTO storyOptionDTO = (StoryOptionDTO) session.getAttribute("StoryOptionDTO");
 
+//    storyContentDTO.setContent(content);
     StoryDTO storyDTO = storyService.saveStory(storyOptionDTO, storyContentDTO, filesPath, userId);
     imageService.saveImages(filesPath, storyDTO.getId());
 

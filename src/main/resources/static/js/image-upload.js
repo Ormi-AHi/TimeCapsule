@@ -38,6 +38,8 @@ saveButton.addEventListener('click', function () {
         formData.append('images', file);  // "images"는 컨트롤러에서 받을 파라미터 이름
     });
 
+    formData.set('content', document.getElementById('content').innerText);
+
     // 체크박스 값 처리
     const isShared = document.getElementById('communityToggle').checked;
     formData.set('isShared', isShared); // 체크박스의 실제 값으로 설정
@@ -60,11 +62,16 @@ saveButton.addEventListener('click', function () {
 
 // 모달의 확인 버튼 클릭 시 리다이렉트 처리
 confirmButton.addEventListener('click', function () {
-    console.log('Confirm button clicked');  // 클릭 시 로그 출력
     if (redirectUrl) {
-        window.location.href = redirectUrl;  // 저장된 리다이렉트 URL로 이동
-    } else {
+        window.location.href = redirectUrl;
+    }
+
+    else if (storyModalContent.innerText === '스토리 생성을 취소하였습니다.') {
         window.location.href = '/stories/form';
+    }
+
+    else {
+        storyModal.style.display = 'none';
     }
 });
 
