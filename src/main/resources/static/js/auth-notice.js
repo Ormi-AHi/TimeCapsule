@@ -131,7 +131,7 @@ function updateButtons(isLoggedIn) {
 
 // 사이드바 표시 함수
 function showSidebar() {
-    const sidebar = document.querySelector('.sidebar'); // 사이드바의 클래스나 ID에 맞게 수정하세요
+    const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         sidebar.style.display = 'block';
     }
@@ -139,7 +139,7 @@ function showSidebar() {
 
 // 사이드바 숨김 함수
 function hideSidebar() {
-    const sidebar = document.querySelector('.sidebar'); // 사이드바의 클래스나 ID에 맞게 수정하세요
+    const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         sidebar.style.display = 'none';
     }
