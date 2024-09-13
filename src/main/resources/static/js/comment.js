@@ -60,6 +60,7 @@ function loadComments(storyId) {
         })
         .then(comments => {
             const commentListContainer = document.getElementById('commentListContainer');
+            const currentUserId = document.getElementById('userId').value;
             if (commentListContainer) {
                 commentListContainer.innerHTML = `<div class="commentList">` + comments.map(comment => `
                     <div class="comment-item" data-id="${comment.id}">
@@ -72,18 +73,20 @@ function loadComments(storyId) {
                             <button class="save-edit" type="button">수정 완료</button>
                             <button type="button" class="cancel-edit">취소</button>
                         </div>
-                        <div class="commentListButtons">
-                            <button class="edit-comment">수정</button>
-                            <button class="delete-comment">삭제</button>
-                        </div>
+                        ${comment.userId == currentUserId ? `
+                            <div class="commentListButtons">
+                                <button class="edit-comment">수정</button>
+                                <button class="delete-comment">삭제</button>
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('') + `</div>`;
             } else {
-                console.error('Comment list container not found');
+                console.error('댓글 리스트 컨테이너를 찾을 수 없습니다.');
             }
         })
         .catch(error => {
-            console.error('Error loading comments:', error);
+            console.error('댓글 로딩 중 오류 발생:', error);
             alert(error.message);
         });
 }
