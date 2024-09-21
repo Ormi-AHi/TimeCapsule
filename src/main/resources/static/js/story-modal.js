@@ -25,10 +25,10 @@ function searchUsers() {
     searchedList.innerHTML = '';
 
     result.innerText = "검색 결과";
-    result.style.backgroundColor = 'gray';
+    result.style.backgroundColor = '#EAE1E1';
 
     // AJAX 요청을 통해 검색된 결과 가져오기
-    fetch(`http://localhost:8080/stories/search?keyword=${search.value}`)
+    fetch(`/stories/search?keyword=${search.value}&userId=${userId}`)
         .then(response => response.json())
         .then(users => {
 
@@ -164,16 +164,4 @@ editButton.addEventListener('click', function () {
 cancelButton.addEventListener('click', function () {
     storyModalContent.innerText = '스토리 생성을 취소하였습니다.'
     storyModal.style.display = 'block';
-});
-
-confirmButton.addEventListener('click', function () {
-    storyModal.style.display = 'none';
-
-    if (storyModalContent.innerText === '생성한 스토리가 저장되었습니다.') {
-        document.getElementById('createForm').submit();
-    }
-
-    if (storyModalContent.innerText === '스토리 생성을 취소하였습니다.') {
-        location.href = 'form';
-    }
 });
