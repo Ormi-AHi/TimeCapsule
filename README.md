@@ -52,8 +52,10 @@
 
 ## 프로젝트 배포
 서버 주소
-- http://ec2-3-36-56-149.ap-northeast-2.compute.amazonaws.com:8080/ (https 적용 X, 음성 녹음 불가)
-- https://3.36.56.149.nip.io/ (https 적용 O, 음성 녹음 가능)
+- ~~http://ec2-3-36-56-149.ap-northeast-2.compute.amazonaws.com:8080/ (https 적용 X, 음성 녹음 불가)~~
+- ~~https://3.36.56.149.nip.io/ (https 적용 O, 음성 녹음 가능)~~
+- 2025.01.01 배포 종료(AWS 비용 청구 문제)
+- **프로젝트의 결과물은 아래의 동작 예시 영상으로 확인하실 수 있습니다.**
 
 ### 관리자 계정  
 ID: test123  
